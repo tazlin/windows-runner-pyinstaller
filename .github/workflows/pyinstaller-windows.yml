@@ -23,4 +23,4 @@ jobs:
       - run: python -m pip install -r requirements.txt -r requirements.build.txt
       - run: pyinstaller --clean -y --dist ./dist/windows --log-level DEBUG entry_point.spec      
       # Target folder will be the latest commit hash
-      - run: python upload_to_r2 --bucket_name ${{ secrets.AWS_BUCKET }} --dist_folder ./dist/windows --target_folder ${{ github.sha }}
+      - run: python -m upload_to_r2 --bucket_name ${{ secrets.AWS_BUCKET }} --dist_folder ./dist/windows --target_folder ${{ github.sha }}
