@@ -7,6 +7,10 @@ on:
 jobs:
   build:
     runs-on: windows-latest   
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT }}
 
     steps:
       - uses: actions/checkout@v3
@@ -16,13 +20,7 @@ jobs:
           cache: 'pip'
       - run: python -m pip install --upgrade pip wheel setuptools
       - run: python -m pip install pyinstaller
-      - run: python -m pip install -r requirements.txt 
-      - run: pyinstaller --clean -y --dist ./dist/windows --log-level DEBUG entry_point.spec
-      - name: Upload to S3
-        uses: shallwefootball/s3-upload-action@master
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          endpoint: ${{ secrets.AWS_ENDPOINT }}
-          source_dir: './dist/windows'
+      - run: python -m pip install -r requirements.txt -r requirements-build.txt
+      - run: pyinstaller --clean -y --dist ./dist/windows --log-level DEBUG entry_point.spec      
+      # Target folder will be the latest commit hash
+      - run: python upload_to_r2 --bucket_name ${{ secrets.AWS_BUCKET }} --dist_folder ./dist/windows --target_folder ${{ github.sha }}
