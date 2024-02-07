@@ -1,2 +1,2 @@
 --extra-index-url https://download.pytorch.org/whl/cu121
-hordelib==2.5.1
+hordelib==2.5.0
